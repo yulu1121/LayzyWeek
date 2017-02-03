@@ -36,7 +36,7 @@ public class SecondCategoryActivity extends BaseActivity implements SecondCatego
     private PullToRefreshListView refreshListView;
     private MainFirstPageAdapter adapter;
     Bundle bundle = null;
-    private int citiesId;
+    private int citiesId=192;
     private JsonLoader jsonLoader;
     private List<FirstPage.ResultBean> mlist;
     private SecondCategoryPresenter presenter = null;
