@@ -10,52 +10,66 @@ import android.support.v4.view.ViewPager;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.administrator.layzyweek.BaseActivity;
 import com.example.administrator.layzyweek.R;
 import com.example.administrator.layzyweek.activities.firstformationpresenter.FirstFormationPresenter;
-import com.example.administrator.layzyweek.activities.firstformationpresenter.FirstFormationPresenter.FirstFormationSend2View;
 import com.example.administrator.layzyweek.activities.firstformationpresenter.FirstFormationPresenterImpl;
-import com.example.administrator.layzyweek.entries.FirstPageFormation;
+import com.example.administrator.layzyweek.entries.FirstPageDetail;
 import com.example.administrator.layzyweek.utils.ImageLoader;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * 首页详情的页面
  * Created by Administrator on 2017/1/23.
  */
 
-public class FirstFormationActivity extends BaseActivity implements FirstFormationSend2View{
-    private ViewPager pager;
-    private TextView title;
-    private TextView category;
-    private TextView price;
-    private TextView openTime;
-    private ImageView imageOne;
-    private ImageView imageTwo;
-    private ImageView imageThree;
-    private TextView address;
+public class FirstFormationActivity extends BaseActivity implements FirstFormationPresenter.FirstFormationSend2View{
+    @BindView(R.id.first_formation_pager)
+    ViewPager pager;
+    @BindView(R.id.first_formation_title)
+    TextView title;
+    @BindView(R.id.first_formation_kindName)
+    TextView category;
+    @BindView(R.id.first_foramtion_price)
+    TextView price;
+    @BindView(R.id.first_formation_opentime)
+    TextView openTime;
+    @BindView(R.id.first_formation_kindImage)
+    ImageView kindImage;
+    @BindView(R.id.first_formation_address)
+    TextView address;
+    @BindView(R.id.linearFormation)
+    LinearLayout linear;
+    @BindView(R.id.lazyNotify_linear)
+    LinearLayout lazyNotifyLinear;
+    @BindView(R.id.booking_linear)
+    LinearLayout bookingLinear;
     private List<ImageView> imageList;
     private Handler mHandler;
     private int currentPager = 0;
     Bundle bundle  = null;
+    FirstFormationPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         Intent intent=getIntent();
         bundle = intent.getBundleExtra("formation");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.first_page_formation);
-        FirstFormationPresenter presenter = new FirstFormationPresenterImpl(this);
+        presenter = new FirstFormationPresenterImpl(this);
         presenter.firstFormationGetData(String.valueOf(bundle.getInt("leo_id")));
-        initView();
+        ButterKnife.bind(this);
     }
-    private void initPager(ArrayList<String> list){
+    private void initPager(List<String> list){
         imageList = new ArrayList<>();
-        for (int i = 0; i < list.size() ; i++) {
+        for (int i = 0; i < 3 ; i++) {
             final ImageView imageView = new ImageView(this);
             imageView.setScaleType(ImageView.ScaleType.FIT_XY);
             ImageLoader.loadImage(list.get(i), new ImageLoader.ImageListener() {
@@ -67,30 +81,23 @@ public class FirstFormationActivity extends BaseActivity implements FirstFormati
             imageList.add(imageView);
         }
     }
-    private void initView() {
-        pager = (ViewPager) findViewById(R.id.first_formation_pager);
-        title = (TextView) findViewById(R.id.first_formation_title);
-        category = (TextView) findViewById(R.id.first_formation_kindName);
-        price = (TextView)findViewById(R.id.first_foramtion_price);
-        openTime = (TextView)findViewById(R.id.first_formation_opentime);
-        address = (TextView) findViewById(R.id.first_formation_address);
-        imageOne = (ImageView)findViewById(R.id.first_formation_imageOne);
-        imageTwo = (ImageView)findViewById(R.id.first_formation_imageTwo);
-        imageThree = (ImageView)findViewById(R.id.first_formation_imageThree);
-        title.setText(bundle.getString("title"));
-        category.setText(bundle.getString("category"));
-        price.setText("￥"+bundle.getString("price"));
-        openTime.setText(bundle.getString("overtime"));
-        address.setText(bundle.getString("address"));
-        ArrayList<String> image = bundle.getStringArrayList("image");
-        initPager(image);
+
+    public void onClickBackIng(View view) {
+        finish();
+    }
+
+    @Override
+    public void sendFormation2View(FirstPageDetail detail) {
+        FirstPageDetail.ResultBean result = detail.getResult();
+        List<String> images = result.getImages();
+        initPager(images);
         pager.setAdapter(new ViewPagerAdapter());
         if(mHandler==null){
             mHandler = new Handler();
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    if(currentPager==imageList.size()-1){
+                    if(currentPager==2){
                         currentPager=0;
                     }else {
                         currentPager++;
@@ -100,48 +107,69 @@ public class FirstFormationActivity extends BaseActivity implements FirstFormati
                 }
             }, 3000);
         }
-        String urlOne = image.get(0);
-        imageOne.setTag(urlOne);
-        ImageLoader.loadImage(urlOne, new ImageLoader.ImageListener() {
+        address.setText(result.getAddress());
+        price.setText("￥"+result.getPrice_info());
+        title.setText(result.getTitle());
+        category.setText(result.getCategory().getCn_name());
+        final String kindImageUrl  = result.getCategory().getIcon_view();
+        kindImage.setTag(kindImageUrl);
+        ImageLoader.loadImage(kindImageUrl, new ImageLoader.ImageListener() {
             @Override
             public void ImageComplete(Bitmap bitMap, String Url) {
-                if(Url.equals(imageOne.getTag())){
-                    imageOne.setImageBitmap(bitMap);
+                if(Url.equals(kindImage.getTag())){
+                    kindImage.setImageBitmap(bitMap);
                 }
             }
         });
-        String urlTwo = image.get(1);
-        imageTwo.setTag(urlTwo);
-        ImageLoader.loadImage(urlTwo, new ImageLoader.ImageListener() {
-            @Override
-            public void ImageComplete(Bitmap bitMap, String Url) {
-                if(Url.equals(imageTwo.getTag())){
-                    imageTwo.setImageBitmap(bitMap);
-                }
+        openTime.setText(result.getTime().getInfo());
+        List<FirstPageDetail.ResultBean.DescriptionBean> description = result.getDescription();
+        for (int i = 0; i <description.size(); i++) {
+            if(description.get(i).getType().equals("text")){
+                TextView textView  = new TextView(this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                textView.setLayoutParams(lp);
+                textView.setText(description.get(i).getContent());
+                linear.addView(textView);
+            }else if(description.get(i).getType().equals("image")){
+                final ImageView imageView = new ImageView(this);
+                String url = description.get(i).getContent();
+                imageView.setTag(url);
+                imageView.setScaleType(ImageView.ScaleType.FIT_XY);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 400);
+                imageView.setLayoutParams(lp);
+                ImageLoader.loadImage(url, new ImageLoader.ImageListener() {
+                    @Override
+                    public void ImageComplete(Bitmap bitMap, String Url) {
+                        if(Url.equals(imageView.getTag())){
+                            imageView.setImageBitmap(bitMap);
+                        }
+                    }
+                });
+                linear.addView(imageView);
             }
-        });
-        String urlThree = image.get(2);
-        imageThree.setTag(urlThree);
-        ImageLoader.loadImage(urlThree, new ImageLoader.ImageListener() {
-            @Override
-            public void ImageComplete(Bitmap bitMap, String Url) {
-                if(Url.equals(imageThree.getTag())){
-                    imageThree.setImageBitmap(bitMap);
-                }
+        }
+        List<FirstPageDetail.ResultBean.LrzmTipsBean> lrzmTips = result.getLrzm_tips();
+        for (int i = 0; i < lrzmTips.size() ; i++) {
+            if(lrzmTips.get(i).getType().equals("text")){
+                TextView textView = new TextView(this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                textView.setLayoutParams(lp);
+                textView.setText(lrzmTips.get(i).getContent());
+                lazyNotifyLinear.addView(textView);
             }
-        });
+        }
+        List<FirstPageDetail.ResultBean.BookingPolicyBean> bookingPolicy = result.getBooking_policy();
+        for (int i = 0; i < bookingPolicy.size(); i++) {
+            if(bookingPolicy.get(i).getType().equals("text")){
+                TextView textView = new TextView(this);
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                textView.setLayoutParams(lp);
+                textView.setText(bookingPolicy.get(i).getContent());
+                bookingLinear.addView(textView);
+            }
+        }
     }
 
-    @Override
-    public void sendFormation2View(String data) {
-        Gson gson = new Gson();
-        FirstPageFormation formation = gson.fromJson(data, FirstPageFormation.class);
-
-    }
-
-    public void onClickBackIng(View view) {
-        finish();
-    }
     class ViewPagerAdapter extends PagerAdapter{
         @Override
         public Object instantiateItem(ViewGroup container, int position) {

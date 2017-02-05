@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:numColumns="2"
         android:paddingStart="40dp"
-        android:verticalSpacing="20dp"
+        android:verticalSpacing="30dp"
         android:paddingTop="20dp"
         android:id="@+id/second_grid"
         android:stretchMode="columnWidth"

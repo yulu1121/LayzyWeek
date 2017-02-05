@@ -1,5 +1,6 @@
 package com.example.administrator.layzyweek.fragments;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -35,14 +36,24 @@ public class FirstFragment extends BaseFragment implements FirstPresenter.SendRe
     private MainFirstPageAdapter adapter;
     private PullToRefreshListView listView;
     private List<FirstPage.ResultBean> mlist;
+    private Context mContext;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+    public static FirstFragment newInstance(){
+        FirstFragment firstFragment = new FirstFragment();
+        return firstFragment;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.first_select_main,container,false);
         initView(view);
         firstPresenter = new FirstPresenterImpl(this);
-//        firstPresenter.getResult(SharedPreferenceUtils.getFloat(getContext(),"latitude"),SharedPreferenceUtils.getFloat(getContext(),"longitude"),currentPage);
-        firstPresenter.getResult(30.575388756810078,114.30963859310197,currentPage);
+        firstPresenter.getResult(SharedPreferenceUtils.getFloat(getContext(),"latitude"),SharedPreferenceUtils.getFloat(getContext(),"longitude"),currentPage);
+        //firstPresenter.getResult(30.575388756810078,114.30963859310197,currentPage);
         return view;
     }
 
@@ -61,13 +72,13 @@ public class FirstFragment extends BaseFragment implements FirstPresenter.SendRe
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 currentPage = 0;
                 mlist.clear();
-                //firstPresenter.getResult(SharedPreferenceUtils.getFloat(getContext(),"latitude"),SharedPreferenceUtils.getFloat(getContext(),"longitude"),currentPage);
-                firstPresenter.getResult(30.575388756810078,114.30963859310197,currentPage);
+                firstPresenter.getResult(SharedPreferenceUtils.getFloat(getContext(),"latitude"),SharedPreferenceUtils.getFloat(getContext(),"longitude"),currentPage);
+                //firstPresenter.getResult(30.575388756810078,114.30963859310197,currentPage);
                 firstPresenter  = new FirstPresenterImpl(new FirstPresenter.SendResult() {
                     @Override
                     public void Send2View(String result) {
                         Gson gson = new Gson();
-                        String state = SharedPreferenceUtils.getString(getContext(), "state");
+                        String state = SharedPreferenceUtils.getString(mContext, "state");
                         FirstPage firstPage = gson.fromJson(result, FirstPage.class);
                         List<FirstPage.ResultBean> result1 = firstPage.getResult();
                         for (int i = 0; i <result1.size(); i++) {
@@ -91,7 +102,7 @@ public class FirstFragment extends BaseFragment implements FirstPresenter.SendRe
                     @Override
                     public void Send2View(String result) {
                         Gson gson = new Gson();
-                        String state = SharedPreferenceUtils.getString(getContext(), "state");
+                        String state = SharedPreferenceUtils.getString(mContext, "state");
                         FirstPage firstPage = gson.fromJson(result, FirstPage.class);
                         List<FirstPage.ResultBean> result1 = firstPage.getResult();
                         for (int i = 0; i <result1.size(); i++) {
@@ -112,7 +123,7 @@ public class FirstFragment extends BaseFragment implements FirstPresenter.SendRe
     public void Send2View(String result) {
         mlist = new ArrayList<>();
         Gson gson = new Gson();
-        String state = SharedPreferenceUtils.getString(getContext(), "state");
+        String state = SharedPreferenceUtils.getString(mContext, "state");
         FirstPage firstPage = gson.fromJson(result, FirstPage.class);
         List<FirstPage.ResultBean> result1 = firstPage.getResult();
         for (int i = 0; i <result1.size(); i++) {
@@ -121,7 +132,7 @@ public class FirstFragment extends BaseFragment implements FirstPresenter.SendRe
            }
         }
         mlist.addAll(result1);
-        adapter = new MainFirstPageAdapter(getContext(),mlist);
+        adapter = new MainFirstPageAdapter(mContext,mlist);
         listView.setAdapter(adapter);
     }
 }

@@ -1,7 +1,9 @@
 package com.example.administrator.layzyweek.utils.cityutils;
 
 import com.example.administrator.layzyweek.constans.Constants;
+import com.example.administrator.layzyweek.entries.City;
 import com.example.administrator.layzyweek.utils.JsonLoader;
+import com.google.gson.Gson;
 
 /**
  *
@@ -20,7 +22,9 @@ public class CityModelImpl implements CitiesModel {
         jsonLoader.parseJson2String(Constants.URL_CITY, new JsonLoader.JsonListener() {
             @Override
             public void JsonComplete(String json) {
-                cityResult.sendCityResult(json);
+                Gson gson = new Gson();
+                City city = gson.fromJson(json, City.class);
+                cityResult.sendCityResult(city);
             }
         });
     }

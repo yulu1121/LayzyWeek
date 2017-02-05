@@ -1,5 +1,7 @@
 package com.example.administrator.layzyweek.utils.cityutils;
 
+import com.example.administrator.layzyweek.entries.City;
+
 /**
  *
  * Created by Administrator on 2017/1/25.
@@ -18,7 +20,7 @@ public class CitiesPresenterImpl implements CitiesPresenter,CitiesModel.SendCity
     }
 
     @Override
-    public void sendCityResult(String result) {
-        sendCity2View.sendCity2View(result);
+    public void sendCityResult(City city) {
+        sendCity2View.sendCity2View(city);
     }
 }

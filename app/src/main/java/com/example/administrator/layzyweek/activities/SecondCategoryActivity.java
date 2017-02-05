@@ -11,12 +11,12 @@ import com.example.administrator.layzyweek.BaseActivity;
 import com.example.administrator.layzyweek.R;
 import com.example.administrator.layzyweek.activities.secondcategorypresenter.SecondCategoryPresenter;
 import com.example.administrator.layzyweek.activities.secondcategorypresenter.SecondCategoryPresenterImpl;
-import com.example.administrator.layzyweek.constans.Constants;
-import com.example.administrator.layzyweek.entries.Cities;
 import com.example.administrator.layzyweek.entries.City;
 import com.example.administrator.layzyweek.entries.FirstPage;
-import com.example.administrator.layzyweek.selfadapter.MainFirstPageAdapter;
-import com.example.administrator.layzyweek.utils.JsonLoader;
+import com.example.administrator.layzyweek.selfadapter.SecondCategoryAdapter;
+import com.example.administrator.layzyweek.utils.SharedPreferenceUtils;
+import com.example.administrator.layzyweek.utils.cityutils.CitiesPresenter;
+import com.example.administrator.layzyweek.utils.cityutils.CitiesPresenterImpl;
 import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
@@ -29,18 +29,18 @@ import java.util.List;
  * Created by Administrator on 2017/1/25.
  */
 
-public class SecondCategoryActivity extends BaseActivity implements SecondCategoryPresenter.SendCategory2View{
+public class SecondCategoryActivity extends BaseActivity implements SecondCategoryPresenter.SendCategory2View,CitiesPresenterImpl.SendCity2View{
     private String category;
     private int currentPage = 1;
     private TextView categoryName;
     private PullToRefreshListView refreshListView;
-    private MainFirstPageAdapter adapter;
+    private SecondCategoryAdapter adapter;
     Bundle bundle = null;
-    private int citiesId=192;
-    private JsonLoader jsonLoader;
+    private int citiesId;
+    private String cityName;
+    private CitiesPresenter citiesPresenter;
     private List<FirstPage.ResultBean> mlist;
     private SecondCategoryPresenter presenter = null;
-    private List<Cities> citiesList;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,50 +48,30 @@ public class SecondCategoryActivity extends BaseActivity implements SecondCatego
         bundle = intent.getBundleExtra("categoryBundle");
         category = bundle.getString("category");
         presenter = new SecondCategoryPresenterImpl(this);
-//        String city = SharedPreferenceUtils.getString(this, "city");
-       // presenter.getCategoryData(SharedPreferenceUtils.getFloat(this,"latitude"),SharedPreferenceUtils.getFloat(this,"longitude"),currentPage,cityId,category);
+        citiesPresenter = new CitiesPresenterImpl(this);
         setContentView(R.layout.second_category_layout);
-        initView();
+        citiesPresenter.sendCityData();
     }
-    private List<Cities> initCity(){
-        jsonLoader = new JsonLoader();
-        final Gson gson = new Gson();
-        final List<Cities> list = new ArrayList<>();
-        jsonLoader.parseJson2String(Constants.URL_CITY, new JsonLoader.JsonListener() {
-            @Override
-            public void JsonComplete(String json) {
-                City city = gson.fromJson(json, City.class);
-                List<City.ResultBean> result = city.getResult();
-                for (int i = 0; i <result.size() ; i++) {
-                    City.ResultBean resultBean = result.get(i);
-                    for (int j = 0; j <resultBean.getCity_list().size() ; j++) {
-                        Cities cities = new Cities();
-                        String city_name = resultBean.getCity_list().get(j).getCity_name();
-                        int city_id = resultBean.getCity_list().get(j).getCity_id();
-                        cities.setCityName(city_name);
-                        cities.setCityID(city_id);
-                        list.add(cities);
-                    }
+    @Override
+    public void sendCity2View(City city) {
+        cityName = SharedPreferenceUtils.getString(this,"city");
+        String substring = cityName.substring(0, cityName.length() - 1);
+        Log.e("xx",substring);
+        List<City.ResultBean> result = city.getResult();
+        for (int i = 0; i < result.size(); i++) {
+            List<City.ResultBean.CityListBean> city_list = result.get(i).getCity_list();
+            for (int j = 0; j <city_list.size() ; j++) {
+                if(city_list.get(j).getCity_name().equals(substring)){
+                    citiesId = city_list.get(j).getCity_id();
+                    initView();
                 }
             }
         }
-        );
-        return list;
     }
 
     private void initView() {
-//        cityId = getCityId("武汉");
-        List<Cities> cityList = initCity();
-        citiesList = new ArrayList<>();
-        citiesList.addAll(cityList);
-        for (int i = 0; i < citiesList.size(); i++) {
-            Cities cities = citiesList.get(i);
-            if(cities.getCityName().equals("武汉")){
-                citiesId = cities.getCityID();
-            }
-        }
-        Log.e("==",":"+citiesId);
-        presenter.getCategoryData(30.575388756810078,114.30963859310197,currentPage,citiesId,category);
+//        presenter.getCategoryData(30.575388756810078,114.30963859310197,currentPage,citiesId,category);
+        presenter.getCategoryData(SharedPreferenceUtils.getFloat(this,"latitude"),SharedPreferenceUtils.getFloat(this,"longitude"),currentPage,citiesId,category);
         categoryName = (TextView)findViewById(R.id.categoryName);
         categoryName.setText(bundle.getString("categoryName"));
         refreshListView = (PullToRefreshListView) findViewById(R.id.main_listView);
@@ -100,7 +80,8 @@ public class SecondCategoryActivity extends BaseActivity implements SecondCatego
             public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
                 currentPage = 1;
                 mlist.clear();
-                presenter.getCategoryData(30.575388756810078,114.30963859310197,currentPage,citiesId,category);
+              //  presenter.getCategoryData(30.575388756810078,114.30963859310197,currentPage,citiesId,category);
+                presenter.getCategoryData(SharedPreferenceUtils.getFloat(SecondCategoryActivity.this,"latitude"),SharedPreferenceUtils.getFloat(SecondCategoryActivity.this,"longitude"),currentPage,citiesId,category);
                 presenter = new SecondCategoryPresenterImpl(new SecondCategoryPresenter.SendCategory2View() {
                     @Override
                     public void sendCategory2View(String data) {
@@ -116,7 +97,7 @@ public class SecondCategoryActivity extends BaseActivity implements SecondCatego
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
                 currentPage++;
-                presenter.getCategoryData(30.575388756810078,114.30963859310197,currentPage,citiesId,category);
+                presenter.getCategoryData(SharedPreferenceUtils.getFloat(SecondCategoryActivity.this,"latitude"),SharedPreferenceUtils.getFloat(SecondCategoryActivity.this,"longitude"),currentPage,citiesId,category);
                 presenter = new SecondCategoryPresenterImpl(new SecondCategoryPresenter.SendCategory2View() {
                     @Override
                     public void sendCategory2View(String data) {
@@ -138,7 +119,8 @@ public class SecondCategoryActivity extends BaseActivity implements SecondCatego
         mlist = new ArrayList<>();
         FirstPage firstPage = gson.fromJson(data,FirstPage.class);
         mlist.addAll(firstPage.getResult());
-        adapter = new MainFirstPageAdapter(this,mlist);
+        adapter = new SecondCategoryAdapter(this,mlist);
         refreshListView.setAdapter(adapter);
     }
+
 }

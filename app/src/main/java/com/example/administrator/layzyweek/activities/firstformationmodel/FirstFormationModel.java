@@ -1,5 +1,7 @@
 package com.example.administrator.layzyweek.activities.firstformationmodel;
 
+import com.example.administrator.layzyweek.entries.FirstPageDetail;
+
 /**
  *
  * Created by Administrator on 2017/1/23.
@@ -10,6 +12,6 @@ public interface FirstFormationModel {
     void getFirstFormationResult(String id);
     //发送数据
     interface FirstFormationSendResult{
-        void sendFirstFormation(String result);
+        void sendFirstFormation(FirstPageDetail detail);
     }
 }

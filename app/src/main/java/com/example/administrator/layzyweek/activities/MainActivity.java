@@ -7,6 +7,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,10 +37,10 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     private LayoutInflater inflater;
     private List<View> thirdAdList;//存放广告视图的集合
     private ViewPager thirdAdViewPager;
-    private FirstFragment firstFragment = new FirstFragment();
-    private SecondFragment secondFragment = new SecondFragment();
-    private ThirdFragment thirdFragment = new ThirdFragment();
-    private FourthFragment fourthFragment = new FourthFragment();
+    private FirstFragment firstFragment = FirstFragment.newInstance();
+    private SecondFragment secondFragment = SecondFragment.newInstance();
+    private ThirdFragment thirdFragment = ThirdFragment.newInstance();
+    private FourthFragment fourthFragment = FourthFragment.newInstance();
     public LocationClient mLocationClient = null;
     private List<Fragment> mlist;
 //    public static final String LOCATION = "location";
@@ -172,6 +173,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
     class ThirdAdAdapter extends PagerAdapter {
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
+            thirdAdViewPager.removeView(thirdAdList.get(position));
             container.addView(thirdAdList.get(position));
             return thirdAdList.get(position);
         }
@@ -230,7 +232,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 if(fragment==(thirdFragment)){
                         initThirdViewPager();
                         initDialog();
-                }
+                    if(!dialog.isShowing()){
+                        dialog.show();
+                    }}
             }
 
             @Override
@@ -278,9 +282,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
                 break;
             case R.id.selectThree:
                 mViewPager.setCurrentItem(2);
-                initThirdViewPager();
-                initDialog();
-                dialog.show();
                 break;
             case R.id.selectFour:
                 mViewPager.setCurrentItem(3);
@@ -298,6 +299,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
            double longitude = location.getLongitude();
             SharedPreferenceUtils.saveFloat(MainActivity.this,"longitude",(float)longitude);
            String city = location.getAddress().city;
+            Log.e("xx",city);
             SharedPreferenceUtils.saveString(MainActivity.this,"city",city);
         }
     }

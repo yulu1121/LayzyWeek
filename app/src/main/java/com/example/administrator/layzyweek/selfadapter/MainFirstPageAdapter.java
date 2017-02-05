@@ -16,8 +16,10 @@ import com.example.administrator.layzyweek.activities.FirstFormationActivity;
 import com.example.administrator.layzyweek.entries.FirstPage;
 import com.example.administrator.layzyweek.utils.ImageLoader;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 
 /**
@@ -67,12 +69,6 @@ public class MainFirstPageAdapter extends BaseAdapter {
                 Intent intent  = new Intent(context, FirstFormationActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putInt("leo_id",bean.getLeo_id());
-                bundle.putString("title",bean.getTitle());
-                bundle.putString("overtime",bean.getTime_desc());
-                bundle.putString("category",bean.getCategory());
-                bundle.putStringArrayList("image", (ArrayList<String>) bean.getFront_cover_image_list());
-                bundle.putString("price",bean.getPrice_info());
-                bundle.putString("address",bean.getAddress());
                 intent.putExtra("formation",bundle);
                 context.startActivity(intent);
             }
@@ -94,21 +90,22 @@ public class MainFirstPageAdapter extends BaseAdapter {
         });
         return view;
     }
-   private class ViewHolder{
-        private ImageView mainImageView;
-        private TextView mainTitle;
-        private TextView mainCompany;
-        private TextView mainOverTime;
-        private TextView clicksMain;
-        private TextView priceMain;
+    class ViewHolder{
+         @BindView(R.id.main_backgroud)
+         ImageView mainImageView;
+         @BindView(R.id.main_title)
+         TextView mainTitle;
+         @BindView(R.id.main_company)
+         TextView mainCompany;
+         @BindView(R.id.overtime_main)
+         TextView mainOverTime;
+         @BindView(R.id.clicks_main)
+         TextView clicksMain;
+         @BindView(R.id.price_main)
+         TextView priceMain;
         ViewHolder(View view){
-            mainImageView = (ImageView) view.findViewById(R.id.main_backgroud);
-            mainTitle  = (TextView) view.findViewById(R.id.main_title);
-            mainCompany = (TextView)view.findViewById(R.id.main_company);
-            mainOverTime = (TextView) view.findViewById(R.id.overtime_main);
-            clicksMain = (TextView)view.findViewById(R.id.clicks_main);
-            priceMain = (TextView) view.findViewById(R.id.price_main);
             view.setTag(this);
+            ButterKnife.bind(this,view);
         }
     }
 }

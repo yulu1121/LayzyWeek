@@ -1,7 +1,9 @@
 package com.example.administrator.layzyweek.activities.firstformationmodel;
 
 import com.example.administrator.layzyweek.constans.Constants;
+import com.example.administrator.layzyweek.entries.FirstPageDetail;
 import com.example.administrator.layzyweek.utils.JsonLoader;
+import com.google.gson.Gson;
 
 /**
  *
@@ -17,11 +19,13 @@ public class FirstFormationModelImpl implements FirstFormationModel {
     @Override
     public void getFirstFormationResult(String id) {
         jsonLoader = new JsonLoader();
-        String url = Constants.URL_MAIN_FORMATION+"&leo_id="+id;
+        String url = Constants.URL_FORMATION_DETAIL+"leo_id="+id+Constants.URL_FORMATION_DETAIL_TWO;
         jsonLoader.parseJson2String(url, new JsonLoader.JsonListener() {
             @Override
             public void JsonComplete(String json) {
-                sendResult.sendFirstFormation(json);
+                Gson gson = new Gson();
+                FirstPageDetail detail = gson.fromJson(json, FirstPageDetail.class);
+                sendResult.sendFirstFormation(detail);
             }
         });
     }

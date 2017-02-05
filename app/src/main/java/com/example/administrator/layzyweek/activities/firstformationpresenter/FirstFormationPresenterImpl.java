@@ -2,6 +2,7 @@ package com.example.administrator.layzyweek.activities.firstformationpresenter;
 
 import com.example.administrator.layzyweek.activities.firstformationmodel.FirstFormationModel;
 import com.example.administrator.layzyweek.activities.firstformationmodel.FirstFormationModelImpl;
+import com.example.administrator.layzyweek.entries.FirstPageDetail;
 
 /**
  *
@@ -21,7 +22,7 @@ public class FirstFormationPresenterImpl implements FirstFormationPresenter,Firs
     }
 
     @Override
-    public void sendFirstFormation(String result) {
-        send2View.sendFormation2View(result);
+    public void sendFirstFormation(FirstPageDetail detail) {
+        send2View.sendFormation2View(detail);
     }
 }

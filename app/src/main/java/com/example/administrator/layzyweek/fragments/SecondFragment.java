@@ -1,5 +1,6 @@
 package com.example.administrator.layzyweek.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -28,6 +29,16 @@ public class SecondFragment extends BaseFragment implements SecondFragPresenter.
     private TextView city;
     private SecondPageKindAdapter adapter;
     private EditText secondSearch;
+    private Context mContext;
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        this.mContext = context;
+    }
+    public static SecondFragment newInstance(){
+        SecondFragment secondFragment = new SecondFragment();
+        return secondFragment;
+    }
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -48,7 +59,7 @@ public class SecondFragment extends BaseFragment implements SecondFragPresenter.
     public void send2View(String result) {
         Gson gson = new Gson();
         SecondKindEntry fromJson = gson.fromJson(result, SecondKindEntry.class);
-        adapter = new SecondPageKindAdapter(getContext(),fromJson.getResult());
+        adapter = new SecondPageKindAdapter(mContext,fromJson.getResult());
         secondGrid.setAdapter(adapter);
     }
 }
