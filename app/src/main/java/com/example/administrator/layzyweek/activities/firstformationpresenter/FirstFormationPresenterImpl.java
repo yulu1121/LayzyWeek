@@ -1,8 +1,9 @@
 package com.example.administrator.layzyweek.activities.firstformationpresenter;
 
 import com.example.administrator.layzyweek.activities.firstformationmodel.FirstFormationModel;
-import com.example.administrator.layzyweek.activities.firstformationmodel.FirstFormationModelImpl;
 import com.example.administrator.layzyweek.entries.FirstPageDetail;
+
+import javax.inject.Inject;
 
 /**
  *
@@ -11,14 +12,15 @@ import com.example.administrator.layzyweek.entries.FirstPageDetail;
 
 public class FirstFormationPresenterImpl implements FirstFormationPresenter,FirstFormationModel.FirstFormationSendResult {
     private FirstFormationModel model;
-    private FirstFormationSend2View send2View;
-    public FirstFormationPresenterImpl(FirstFormationSend2View send2View){
+    @Inject
+    FirstFormationSend2View send2View;
+    public FirstFormationPresenterImpl(FirstFormationSend2View send2View,FirstFormationModel model){
         this.send2View = send2View;
-        model = new FirstFormationModelImpl(this);
+        this.model = model;
     }
     @Override
     public void firstFormationGetData(String id) {
-        model.getFirstFormationResult(id);
+        model.getFirstFormationResult(id,this);
     }
 
     @Override

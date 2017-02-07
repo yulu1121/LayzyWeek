@@ -9,7 +9,7 @@ import com.example.administrator.layzyweek.entries.FirstPageDetail;
 
 public interface FirstFormationModel {
     //获取数据
-    void getFirstFormationResult(String id);
+    void getFirstFormationResult(String id,FirstFormationSendResult sendResult);
     //发送数据
     interface FirstFormationSendResult{
         void sendFirstFormation(FirstPageDetail detail);

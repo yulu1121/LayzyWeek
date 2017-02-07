@@ -11,13 +11,9 @@ import com.google.gson.Gson;
  */
 
 public class FirstFormationModelImpl implements FirstFormationModel {
-    private FirstFormationSendResult sendResult;
     private JsonLoader jsonLoader;
-    public FirstFormationModelImpl(FirstFormationSendResult sendResult){
-        this.sendResult = sendResult;
-    }
     @Override
-    public void getFirstFormationResult(String id) {
+    public void getFirstFormationResult(String id,final FirstFormationSendResult sendResult) {
         jsonLoader = new JsonLoader();
         String url = Constants.URL_FORMATION_DETAIL+"leo_id="+id+Constants.URL_FORMATION_DETAIL_TWO;
         jsonLoader.parseJson2String(url, new JsonLoader.JsonListener() {

@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -294,12 +293,11 @@ public class MainActivity extends BaseActivity implements View.OnClickListener{
         @Override
         public void onReceiveLocation(BDLocation location) {
             //Receive Location
-           double latitude = location.getLatitude();
+            double latitude = location.getLatitude();
             SharedPreferenceUtils.saveFloat(MainActivity.this,"latitude",(float)latitude);
-           double longitude = location.getLongitude();
+            double longitude = location.getLongitude();
             SharedPreferenceUtils.saveFloat(MainActivity.this,"longitude",(float)longitude);
-           String city = location.getAddress().city;
-            Log.e("xx",city);
+            String city = location.getAddress().city;
             SharedPreferenceUtils.saveString(MainActivity.this,"city",city);
         }
     }

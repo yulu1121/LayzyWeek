@@ -96,8 +96,8 @@ public class FirstFragment extends BaseFragment implements FirstPresenter.SendRe
             @Override
             public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
                 currentPage++;
-//                firstPresenter.getResult(SharedPreferenceUtils.getFloat(getContext(),"latitude"),SharedPreferenceUtils.getFloat(getContext(),"longitude"),currentPage);
-                firstPresenter.getResult(30.575388756810078,114.30963859310197,currentPage);
+                firstPresenter.getResult(SharedPreferenceUtils.getFloat(getContext(),"latitude"),SharedPreferenceUtils.getFloat(getContext(),"longitude"),currentPage);
+                //firstPresenter.getResult(30.575388756810078,114.30963859310197,currentPage);
                 firstPresenter = new FirstPresenterImpl(new FirstPresenter.SendResult() {
                     @Override
                     public void Send2View(String result) {

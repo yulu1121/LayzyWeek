@@ -15,13 +15,16 @@ import android.widget.TextView;
 
 import com.example.administrator.layzyweek.BaseActivity;
 import com.example.administrator.layzyweek.R;
+import com.example.administrator.layzyweek.activities.firstformationdragger.DaggerFirstAppComponent;
+import com.example.administrator.layzyweek.activities.firstformationdragger.FirstAppMoudel;
 import com.example.administrator.layzyweek.activities.firstformationpresenter.FirstFormationPresenter;
-import com.example.administrator.layzyweek.activities.firstformationpresenter.FirstFormationPresenterImpl;
 import com.example.administrator.layzyweek.entries.FirstPageDetail;
 import com.example.administrator.layzyweek.utils.ImageLoader;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -56,6 +59,7 @@ public class FirstFormationActivity extends BaseActivity implements FirstFormati
     private Handler mHandler;
     private int currentPager = 0;
     Bundle bundle  = null;
+    @Inject
     FirstFormationPresenter presenter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,7 +67,7 @@ public class FirstFormationActivity extends BaseActivity implements FirstFormati
         bundle = intent.getBundleExtra("formation");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.first_page_formation);
-        presenter = new FirstFormationPresenterImpl(this);
+        DaggerFirstAppComponent.builder().firstAppMoudel(new FirstAppMoudel(this)).build().inJect(this);
         presenter.firstFormationGetData(String.valueOf(bundle.getInt("leo_id")));
         ButterKnife.bind(this);
     }
